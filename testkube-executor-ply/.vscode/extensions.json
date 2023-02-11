@@ -1,0 +1,7 @@
+{
+  "recommendations": [
+    "dbaeumer.vscode-eslint",
+    "ply-ct.vscode-ply",
+    "esbenp.prettier-vscode"
+  ]
+}

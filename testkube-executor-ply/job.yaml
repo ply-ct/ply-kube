@@ -1,0 +1,18 @@
+apiVersion: batch/v1
+kind: Job
+spec:
+  template:
+    spec:
+      containers:
+      - name: {{ .Name }}
+        image: {{ .Image }}
+        imagePullPolicy: IfNotPresent
+        command:
+          - "/bin/runner"
+          - '{{ .Jsn }}'
+        volumeMounts:
+        - name: data-volume
+          mountPath: /data
+        resources:
+          limits:
+            memory: 128Mi

@@ -1,0 +1,27 @@
+{
+  "name": "@ply-ct/testkube-executor-ply",
+  "version": "0.1.0",
+  "description": "Ply executor for testkube",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ply-ct/ply-kube.git"
+  },
+  "main": "dist/main.js",
+  "files": [
+    "dist"
+  ],
+  "types": "dist",
+  "scripts": {
+    "build": "tsc"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.51.0",
+    "@typescript-eslint/parser": "^5.51.0",
+    "eslint": "^8.33.0",
+    "typescript": "^4.9.5"
+  },
+  "dependencies": {
+    "@ply-ct/ply": "^3.0.54"
+  }
+}

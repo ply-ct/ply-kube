@@ -1,0 +1,11 @@
+.DS_Store
+/node_modules
+package-lock.json
+/temp
+/dist
+/notes
+.gitignore
+.gitattributes
+.prettierignore
+*.md
+
