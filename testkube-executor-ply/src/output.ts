@@ -16,8 +16,9 @@ export class Output {
         );
     }
 
-    error(message: string) {
+    error(message: string, err?: Error) {
         this.log('error', message);
+        if (err) this.log('error', `${err}: ${err.stack}`);
     }
 
     info(message: string) {

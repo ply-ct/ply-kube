@@ -8,4 +8,5 @@ package-lock.json
 .gitattributes
 .prettierignore
 *.md
+/job.yaml
 

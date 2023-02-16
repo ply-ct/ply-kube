@@ -10,6 +10,12 @@ spec:
         command:
           - "/bin/runner"
           - '{{ .Jsn }}'
+        env:
+          - name: GITHUB_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: github-token
+                key: github-token
         volumeMounts:
         - name: data-volume
           mountPath: /data
