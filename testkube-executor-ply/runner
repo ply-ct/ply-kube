@@ -1,4 +1,4 @@
 #!/usr/bin/env sh
 node dist/main.js "$@"
 # keep running
-# tail -f /dev/null
+tail -f /dev/null

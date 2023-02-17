@@ -5,6 +5,6 @@ COPY runner /bin/runner
 RUN chmod +x /bin/runner
 COPY ./ /usr/src/executor
 
-CMD [ "/bin/runner"]
+CMD [ "/bin/runner" ]
 
 

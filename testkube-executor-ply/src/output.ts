@@ -1,32 +1,59 @@
 /* eslint-disable no-console */
+import * as ply from '@ply-ct/ply';
 import { ExecutionStatus } from './testkube';
 
 export type OutputLevel = 'error' | 'info' | 'debug';
 
-export class Output {
-    constructor(readonly isDebug = false) {}
+export interface OutputOptions {
+    debug?: boolean;
+    enabled?: boolean;
+    indent?: number;
+}
+export class Output implements ply.Log {
+    readonly options: OutputOptions;
 
-    log(level: OutputLevel = 'info', message: string) {
-        if (level === 'debug' && !this.isDebug) return;
-        console.log(
-            JSON.stringify({
-                type: level === 'error' ? 'error' : 'log',
-                content: message
-            })
-        );
+    constructor(options: OutputOptions = {}) {
+        this.options = { enabled: true, indent: 2, ...options };
     }
 
-    error(message: string, err?: Error) {
-        this.log('error', message);
-        if (err) this.log('error', `${err}: ${err.stack}`);
+    private log(level: OutputLevel = 'info', message: string, obj?: any) {
+        if (!this.options.enabled) return;
+        if (level === 'debug' && !this.options.debug) return;
+
+        if (obj !== undefined) {
+            if (obj.stack) {
+                this.log(level, message);
+                console.log(
+                    JSON.stringify({
+                        type: level === 'error' ? 'error' : 'log',
+                        content: obj.stack,
+                        time: new Date()
+                    })
+                );
+            } else {
+                this.log(level, message + ': ' + JSON.stringify(obj, null, this.options.indent));
+            }
+        } else {
+            console.log(
+                JSON.stringify({
+                    type: level === 'error' ? 'error' : 'log',
+                    content: message,
+                    time: new Date()
+                })
+            );
+        }
     }
 
-    info(message: string) {
-        this.log('info', message);
+    error(message: string, obj?: any) {
+        this.log('error', message, obj);
     }
 
-    debug(message: string) {
-        this.log('debug', message);
+    info(message: string, obj?: any) {
+        this.log('info', message, obj);
+    }
+
+    debug(message: string, obj?: any) {
+        this.log('debug', message, obj);
     }
 
     result(status: ExecutionStatus, output: string, message?: string) {
@@ -37,13 +64,25 @@ export class Output {
                 result: {
                     status,
                     output,
-                    ...(status === 'failed' && { errorMessage: message })
+                    ...(status === 'failed' && { errorMessage: message }),
+                    time: new Date()
                 }
             })
         );
     }
 
-    event() {
-        // TODO
+    get enabled(): boolean {
+        return this.options.enabled || false;
+    }
+
+    event(eventId: string, eventObj: object) {
+        console.log(
+            JSON.stringify({
+                type: 'event',
+                content: JSON.stringify({ id: eventId, event: eventObj }),
+                time: new Date()
+            })
+        );
+
     }
 }

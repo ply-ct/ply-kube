@@ -4,7 +4,8 @@ import { PlyRunner } from './runner';
 import { Execution } from './testkube';
 import { version } from './version';
 
-const output = new Output(true);
+const output = new Output();
+
 output.info(`testkube-executor-ply version ${version}`);
 
 let valid = true;
@@ -22,17 +23,27 @@ if (!dataDir || !existsSync(dataDir)) {
     valid = false;
 }
 
-if (!valid) process.exit(1);
+if (!valid) {
+    output.result('aborted', 'Invalid context');
+    process.exit(1);
+}
 
 const executor = args[0] as Execution;
 
 const cwd = process.cwd();
 process.chdir(`${dataDir}/repo`);
 const runner = new PlyRunner(output);
+
+output.result('passed', 'you better believe it');
+
 runner
     .runTests()
-    .then(() => {
-        output.result('passed', 'you better believe it');
+    .then((results) => {
+        if (!results.Failed && !results.Errored) {
+            output.result('passed', 'Passed');
+        } else {
+            output.result('failed', 'Failed');
+        }
     })
     .catch((err: Error) => {
         output.error(err.message, err);
