@@ -1,3 +1,4 @@
+import { promises as fs } from 'fs';
 import { execFile as cpExecFile } from 'child_process';
 import { promisify } from 'util';
 import * as ply from '@ply-ct/ply';
@@ -15,7 +16,9 @@ export interface WorkerOptions {
 }
 
 export class PlyWorker {
-    constructor(readonly options: WorkerOptions, readonly output: Output) {}
+    constructor(readonly options: WorkerOptions, readonly output: Output) {
+        options.plyOptions.reporter = 'json';
+    }
 
     async npmInstall() {
         this.output.info('Running npm install...');
@@ -49,15 +52,7 @@ export class PlyWorker {
 
         const start = Date.now();
         this.output.debug('Finding plyees...');
-        const paths = tests.filter((test) => {
-            if (ply.Plyee.isCase(test)) {
-                // TODO why?
-                this.output.error(`Cases not supported. Excluding: ${test}`);
-                return false;
-            }
-            return true;
-        });
-        const plyees = await plier.find(paths);
+        const plyees = await plier.find(tests);
         this.output.debug('Plyees: ' + JSON.stringify(plyees, null, 2));
 
         // listen for events
@@ -65,7 +60,7 @@ export class PlyWorker {
             this.output.event('ply.SuiteEvent', suiteEvent);
         });
         plier.on('test', (plyEvent: ply.PlyEvent) => {
-            this.output.event('ply.plyEvent', plyEvent);
+            this.output.event('ply.PlyEvent', plyEvent);
         });
         plier.on('outcome', (outcomeEvent: ply.OutcomeEvent) => {
             this.output.event('ply.OutcomeEvent', outcomeEvent);
@@ -77,17 +72,21 @@ export class PlyWorker {
             this.output.error(err.message, err);
         });
 
-        const results = await plier.run(plyees);
-        // this.output.debug('Ply results: ' + JSON.stringify(results, null, 2));
+        const results = await plier.run(plyees, this.options.runOptions);
+
+        const outputFile =
+            this.options.plyOptions.outputFile ||
+            `${this.options.plyOptions.logLocation}/ply-runs.json`;
+
+        const plyResults = JSON.parse(
+            await fs.readFile(outputFile, { encoding: 'utf-8' })
+        ) as ply.PlyResults;
+        this.output.event('ply.PlyResults', plyResults);
+
         const res: OverallResults = { Passed: 0, Failed: 0, Errored: 0, Pending: 0, Submitted: 0 };
         results.forEach((result) => res[result.status]++);
         this.output.info('\nOverall Results', res);
         this.output.info('Overall Time', `${Date.now() - start} ms`);
-        if (plier.options.outputFile) {
-            new ply.Storage(plier.options.outputFile).write(
-                JSON.stringify(res, null, plier.options.prettyIndent)
-            );
-        }
         return res;
     }
 

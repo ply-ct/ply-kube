@@ -1,0 +1,4 @@
+testsLocation: test/ply
+
+valuesFiles:
+  - test/ply/values/localhost.json

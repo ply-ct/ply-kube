@@ -1,0 +1,5 @@
+execution:
+  url: ${baseUrl}/executions/63f3f2e72c3fe097468bd54c
+  method: GET
+  headers:
+    Accept: application/json
