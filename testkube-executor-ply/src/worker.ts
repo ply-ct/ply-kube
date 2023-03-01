@@ -5,7 +5,6 @@ import * as ply from '@ply-ct/ply';
 import * as flowbee from 'flowbee';
 import * as tsNode from 'ts-node';
 import { Output } from './output';
-import { OverallResults } from './results';
 import { plyVersion } from './version';
 
 export interface WorkerOptions {
@@ -16,9 +15,7 @@ export interface WorkerOptions {
 }
 
 export class PlyWorker {
-    constructor(readonly options: WorkerOptions, readonly output: Output) {
-        options.plyOptions.reporter = 'json';
-    }
+    constructor(readonly output: Output, readonly options: WorkerOptions) {}
 
     async npmInstall() {
         this.output.info('Running npm install...');
@@ -32,7 +29,7 @@ export class PlyWorker {
         }
     }
 
-    async run(tests: string[]): Promise<OverallResults> {
+    async run(tests: string[]): Promise<ply.OverallResults> {
         if (this.options.npmInstall) {
             await this.npmInstall();
         }
@@ -83,11 +80,9 @@ export class PlyWorker {
         ) as ply.PlyResults;
         this.output.event('ply.PlyResults', plyResults);
 
-        const res: OverallResults = { Passed: 0, Failed: 0, Errored: 0, Pending: 0, Submitted: 0 };
-        results.forEach((result) => res[result.status]++);
-        this.output.info('\nOverall Results', res);
+        this.output.info('\nOverall Results', results);
         this.output.info('Overall Time', `${Date.now() - start} ms`);
-        return res;
+        return results;
     }
 
     private async getPlyVersion(): Promise<string> {

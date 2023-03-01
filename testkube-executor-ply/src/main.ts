@@ -4,7 +4,7 @@ import { PlyRunner } from './runner';
 import { Execution } from './testkube';
 import { version } from './version';
 
-const output = new Output();
+let output = new Output();
 
 output.info(`testkube-executor-ply version ${version}`);
 
@@ -28,13 +28,13 @@ if (!valid) {
     process.exit(1);
 }
 
-const executor = args[0] as Execution;
+const executor = JSON.parse(args[0]) as Execution;
+if (executor.args?.includes('--verbose=true') || executor.args?.includes('-v')) {
+    output = new Output({ debug: true });
+}
 
-const cwd = process.cwd();
 process.chdir(`${dataDir}/repo`);
-const runner = new PlyRunner(output);
-
-output.result('passed', 'you better believe it');
+const runner = new PlyRunner(output, executor.args || []);
 
 runner
     .runTests()

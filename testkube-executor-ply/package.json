@@ -18,21 +18,22 @@
     "build": "npm run ver && npm run ply-ver && tsc && docker build -t ply-ct/testkube-executor-ply .",
     "create-exec": "kubectl testkube create executor --image ply-ct/testkube-executor-ply --types ply-ct/test --name ply-executor",
     "create-test": "kubectl testkube create test --name ply-demo --git-uri https://github.com/ply-ct/ply-demo.git --type ply-ct/test --job-template job.yaml",
-    "run-test": "kubectl testkube run test ply-demo --secret-variable-reference my-sec1=my-secret=sec1",
+    "run-test": "kubectl testkube run test ply-demo --args \"values-files=test/values/global.json,test/values/local-docker.json\"",
     "delete-exec": "kubectl testkube delete executor ply-executor",
     "delete-test": "kubectl testkube delete test ply-demo"
   },
-  "devDependencies": {
-    "@types/glob": "^8.0.1",
-    "@typescript-eslint/eslint-plugin": "^5.51.0",
-    "@typescript-eslint/parser": "^5.51.0",
-    "eslint": "^8.33.0",
-    "typescript": "^4.9.5"
-  },
   "dependencies": {
-    "@ply-ct/ply": "^3.0.56",
+    "@ply-ct/ply": "^3.1.0",
+    "camelcase": "^6.3.0",
     "flowbee": "^0.4.16",
     "glob": "^8.1.0",
     "ts-node": "^10.9.1"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.53.0",
+    "@typescript-eslint/parser": "^5.53.0",
+    "eslint": "^8.34.0",
+    "@types/glob": "^8.0.1",
+    "typescript": "^4.9.5"
   }
 }
