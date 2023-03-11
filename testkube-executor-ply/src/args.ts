@@ -29,11 +29,11 @@ export class PlyArgs {
 
         const { runOptions, ...options } = allOptions;
 
-        output.debug('Options', options);
-        output.debug('Run options', runOptions);
-
         this.options = options;
-        this.runOptions = runOptions as ply.RunOptions;
+        output.debug('Options', this.options);
+
+        this.runOptions = { ...this.defaultRunOptions, ...(runOptions as ply.RunOptions) };
+        output.debug('Run options', this.runOptions);
     }
 
     private parse(args: string[]): ply.Options {

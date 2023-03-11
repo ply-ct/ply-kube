@@ -14,8 +14,8 @@ spec:
           - name: GITHUB_TOKEN
             valueFrom:
               secretKeyRef:
-                name: github-token
-                key: github-token
+                name: github
+                key: token
         volumeMounts:
         - name: data-volume
           mountPath: /data

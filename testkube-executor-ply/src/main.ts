@@ -29,7 +29,7 @@ if (!valid) {
 }
 
 const executor = JSON.parse(args[0]) as Execution;
-if (executor.args?.includes('--verbose=true') || executor.args?.includes('-v')) {
+if (executor.args?.includes('verbose=true')) {
     output = new Output({ debug: true });
 }
 
