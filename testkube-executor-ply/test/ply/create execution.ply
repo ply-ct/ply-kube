@@ -1,0 +1,15 @@
+create execution:
+  url: ${baseUrl}/tests/ply-demo/executions
+  method: POST
+  headers:
+    Content-Type: application/json
+  body: |-
+    {
+      "args": [
+        "values-files=test/values/global.json,test/values/local-docker.json",
+        "verbose=false"
+      ],
+      "executionLabels": {
+        "environment": "localhost"
+      }
+    }

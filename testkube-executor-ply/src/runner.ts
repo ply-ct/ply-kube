@@ -15,7 +15,7 @@ export class PlyRunner {
 
     async runTests(): Promise<ply.OverallResults> {
         this.output.debug('Running ply tests...');
-        const tests: string[] = await this.findTests();
+        const tests = this.args.testFiles || (await this.findTests());
         this.output.debug(`Tests: ${JSON.stringify(tests, null, 2)}`);
 
         const worker = new PlyWorker(this.output, {

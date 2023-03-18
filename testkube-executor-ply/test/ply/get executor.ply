@@ -1,0 +1,5 @@
+get executor:
+  url: ${baseUrl}/executors/ply-executor
+  method: GET
+  headers:
+    Accept: application/json

@@ -1,0 +1,29 @@
+create test:
+  url: ${baseUrl}/tests
+  method: POST
+  headers:
+    Content-Type: application/json
+  body: |-
+    {
+      "name": "ply-demo",
+      "type": "ply-ct/test",
+      "content": {
+        "type": "git-dir",
+        "repository": {
+          "type": "git",
+          "uri": "https://github.com/ply-ct/ply-demo.git",
+          "usernameSecret": {
+            "name": "github",
+            "key": "username"
+          },
+          "tokenSecret": {
+            "name": "github",
+            "key": "token"
+          }
+        }
+      },
+      "executionRequest": {
+        "jobTemplate": "apiVersion: batch/v1\nkind: Job\nspec:\n  template:\n    spec:\n      containers:\n      - name: {{ .Name }}\n        image: {{ .Image }}\n        imagePullPolicy: IfNotPresent\n        command:\n          - \"/bin/runner\"\n          - '{{ .Jsn }}'\n        env:\n          - name: GITHUB_TOKEN\n            valueFrom:\n              secretKeyRef:\n                name: github\n                key: token\n        volumeMounts:\n        - name: data-volume\n          mountPath: /data\n        resources:\n          limits:\n            memory: 512Mi\n"
+      }
+
+    }

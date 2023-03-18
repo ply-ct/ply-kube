@@ -5,7 +5,8 @@ import { Output } from './output';
 export class PlyArgs {
     readonly defaultOptions: ply.Options = {
         verbose: this.output.options.debug,
-        reporter: 'json'
+        reporter: 'json',
+        logLocation: '.'
     };
     readonly defaultRunOptions: ply.RunOptions = {
         trusted: true
@@ -13,6 +14,7 @@ export class PlyArgs {
 
     readonly options: ply.PlyOptions;
     readonly runOptions: ply.RunOptions;
+    readonly testFiles?: string[];
 
     constructor(private output: Output, readonly args: string[]) {
         output.debug('Ply arguments', args);
@@ -20,14 +22,15 @@ export class PlyArgs {
         const defaults = { ...new ply.Defaults(), ...this.defaultOptions };
 
         const argOptions = this.parse(args);
-        output.info('Passed ply options', argOptions);
+        output.info('Parsed options', argOptions);
 
         const allOptions = {
             ...new ply.Config(defaults as ply.PlyOptions, true).options,
             ...argOptions
         };
 
-        const { runOptions, ...options } = allOptions;
+        const { testFiles, runOptions, ...options } = allOptions;
+        this.testFiles = testFiles;
 
         this.options = options;
         output.debug('Options', this.options);
@@ -36,8 +39,8 @@ export class PlyArgs {
         output.debug('Run options', this.runOptions);
     }
 
-    private parse(args: string[]): ply.Options {
-        const options: ply.Options = {};
+    private parse(args: string[]): ply.Options & { testFiles?: string[] } {
+        const options: ply.Options & { testFiles?: string[] } = {};
         for (const arg of args) {
             const eq = arg.indexOf('=');
             if (eq <= 0 || eq > arg.length - 1) {
@@ -55,6 +58,9 @@ export class PlyArgs {
                 vfs[vf] = true;
                 return vfs;
             }, {} as { [file: string]: boolean });
+        }
+        if (typeof options.testFiles === 'string') {
+            options.testFiles = ('' + options.testFiles).split(',');
         }
         return options;
     }

@@ -1,0 +1,5 @@
+get tests:
+  url: ${baseUrl}/tests
+  method: GET
+  headers:
+    Accept: application/json

@@ -1,0 +1,5 @@
+delete test:
+  url: ${baseUrl}/tests/ply-demo
+  method: DELETE
+  headers:
+    Accept: application/json

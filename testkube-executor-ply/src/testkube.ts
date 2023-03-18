@@ -1,3 +1,12 @@
+export interface Test {
+    type: string;
+    name?: string;
+    namespace?: string;
+    content: TestContent;
+    executionRequest?: ExecutionRequest;
+    created?: Date;
+}
+
 export interface Execution {
     /**
      * execution id
@@ -269,6 +278,12 @@ export interface Repository {
     workingDir?: string;
 }
 
+export interface ExecutionRequest {
+    name?: string;
+    namespace?: string;
+    jobTemplate?: string;
+}
+
 export interface Variable {
     name?: string;
     value?: string;
@@ -321,4 +336,10 @@ export interface ArtifactRequest {
      * artifact directories
      */
     dirs?: string[];
+}
+
+export interface CollectionQuery {
+    selector: [string, string];
+    page: number;
+    pageSize: number;
 }

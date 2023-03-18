@@ -12,6 +12,10 @@ export interface OutputOptions {
 export class Output implements ply.Log {
     readonly options: OutputOptions;
 
+    get level(): ply.LogLevel {
+        return this.options.debug ? ply.LogLevel.debug : ply.LogLevel.info;
+    }
+
     constructor(options: OutputOptions = {}) {
         this.options = { enabled: true, indent: 2, ...options };
     }
@@ -83,6 +87,5 @@ export class Output implements ply.Log {
                 time: new Date()
             })
         );
-
     }
 }
