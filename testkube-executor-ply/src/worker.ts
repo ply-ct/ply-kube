@@ -8,9 +8,10 @@ import { Output } from './output';
 import { plyVersion } from './version';
 
 export interface WorkerOptions {
-    plyOptions: ply.Options;
+    plyOptions: ply.PlyOptions;
     runOptions?: ply.RunOptions;
     plyPath?: string;
+    delay?: number;
     npmInstall?: boolean;
 }
 
@@ -30,10 +31,12 @@ export class PlyWorker {
     }
 
     async run(tests: string[]): Promise<ply.OverallResults> {
+        if (this.options.delay) {
+            await this.delay(this.options.delay);
+        }
         if (this.options.npmInstall) {
             await this.npmInstall();
         }
-
         // module.paths.push(process.cwd(), `${process.cwd}/node_modules`);
         tsNode.register({ transpileOnly: true });
 
@@ -92,5 +95,11 @@ export class PlyWorker {
         } else {
             return plyVersion;
         }
+    }
+
+    private async delay(ms: number): Promise<void> {
+        return new Promise((resolve) => {
+            setTimeout(resolve, ms);
+        });
     }
 }

@@ -1,4 +1,3 @@
-import * as process from 'process';
 import * as path from 'path';
 import * as ply from '@ply-ct/ply';
 import { glob } from 'glob';
@@ -18,18 +17,13 @@ export class PlyRunner {
         const tests = this.args.testFiles || (await this.findTests());
         this.output.debug(`Tests: ${JSON.stringify(tests, null, 2)}`);
 
-        const worker = new PlyWorker(this.output, {
-            plyOptions: this.args.options,
-            runOptions: this.args.runOptions,
-            ...(process.env.PLY_PATH && { plyPath: path.resolve(process.env.PLY_PATH) }),
-            npmInstall: true // TODO optional
-        });
+        const worker = new PlyWorker(this.output, this.args.workerOptions);
 
         return await worker.run(tests);
     }
 
     async findTests(): Promise<string[]> {
-        const options = this.args.options;
+        const options = this.args.workerOptions.plyOptions;
         this.output.info('Finding ply tests under', path.resolve(options.testsLocation));
         const globOptions = { cwd: options.testsLocation, ignore: options.ignore };
 
