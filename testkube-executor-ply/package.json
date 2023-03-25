@@ -23,9 +23,9 @@
     "delete-test": "kubectl testkube delete test ply-demo"
   },
   "dependencies": {
-    "@ply-ct/ply": "^3.2.0",
+    "@ply-ct/ply": "^3.2.1",
     "camelcase": "^6.3.0",
-    "flowbee": "^1.0.1",
+    "flowbee": "^1.0.2",
     "glob": "^8.1.0",
     "ts-node": "^10.9.1"
   },
