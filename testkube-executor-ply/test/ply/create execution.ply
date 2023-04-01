@@ -6,8 +6,9 @@ create execution:
   body: |-
     {
       "args": [
+        "test-files=test/requests/get-movie.ply,test/requests/movies-api.ply.yaml",
         "values-files=test/values/global.json,test/values/local-docker.json",
-        "verbose=false"
+        "verbose=true"
       ],
       "executionLabels": {
         "environment": "localhost"

@@ -4,6 +4,7 @@ import * as ply from '@ply-ct/ply';
 import camelCase from 'camelcase';
 import { Output } from './output';
 import { WorkerOptions } from './worker';
+import { Variables } from './testkube';
 
 type ArgOptions = ply.Options & {
     testFiles?: string[];
@@ -14,8 +15,7 @@ type ArgOptions = ply.Options & {
 export class PlyArgs {
     readonly defaultOptions: ply.Options = {
         verbose: this.output.options.debug,
-        reporter: 'json',
-        logLocation: '.'
+        reporter: 'json'
     };
     readonly defaultRunOptions: ply.RunOptions = {
         trusted: true
@@ -24,7 +24,7 @@ export class PlyArgs {
     readonly testFiles?: string[];
     readonly workerOptions: WorkerOptions;
 
-    constructor(private output: Output, readonly args: string[]) {
+    constructor(private output: Output, args: string[], vars: Variables) {
         output.debug('Ply arguments', args);
 
         const defaults = { ...new ply.Defaults(), ...this.defaultOptions };
@@ -38,7 +38,19 @@ export class PlyArgs {
         };
 
         const { testFiles, delay, npmInstall, runOptions, ...plyOptions } = allOptions;
+        if (testFiles) plyOptions.skip = ''; // override skip when test files specified
         this.testFiles = testFiles;
+
+        const fallbackDefaults = new ply.Defaults(plyOptions.testsLocation);
+        if (!plyOptions.expectedLocation) {
+            plyOptions.expectedLocation = fallbackDefaults.expectedLocation;
+        }
+        if (!plyOptions.actualLocation) {
+            plyOptions.actualLocation = fallbackDefaults.actualLocation;
+        }
+        if (!plyOptions.logLocation) {
+            plyOptions.logLocation = fallbackDefaults.logLocation;
+        }
 
         this.workerOptions = {
             plyOptions,
@@ -47,6 +59,16 @@ export class PlyArgs {
             delay,
             npmInstall
         };
+
+        for (const key of Object.keys(vars)) {
+            const runVar = vars[key];
+            if (runVar.value) {
+                if (!this.workerOptions.runOptions.values) {
+                    this.workerOptions.runOptions.values = {};
+                }
+                this.workerOptions.runOptions.values[key] = runVar.value;
+            }
+        }
 
         output.debug('Worker options', this.workerOptions);
     }

@@ -9,7 +9,7 @@ import { plyVersion } from './version';
 
 export interface WorkerOptions {
     plyOptions: ply.PlyOptions;
-    runOptions?: ply.RunOptions;
+    runOptions: ply.RunOptions;
     plyPath?: string;
     delay?: number;
     npmInstall?: boolean;

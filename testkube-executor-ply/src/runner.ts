@@ -4,12 +4,13 @@ import { glob } from 'glob';
 import { Output } from './output';
 import { PlyWorker } from './worker';
 import { PlyArgs } from './args';
+import { Variables } from './testkube';
 
 export class PlyRunner {
     readonly args: PlyArgs;
 
-    constructor(readonly output: Output, args: string[]) {
-        this.args = new PlyArgs(output, args);
+    constructor(readonly output: Output, args: string[] = [], vars: Variables = {}) {
+        this.args = new PlyArgs(output, args, vars);
     }
 
     async runTests(): Promise<ply.OverallResults> {
