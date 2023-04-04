@@ -26,6 +26,7 @@ export class PlyArgs {
 
     constructor(private output: Output, args: string[], vars: Variables) {
         output.debug('Ply arguments', args);
+        output.debug('Variables', vars);
 
         const defaults = { ...new ply.Defaults(), ...this.defaultOptions };
 

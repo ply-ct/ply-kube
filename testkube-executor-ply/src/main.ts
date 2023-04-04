@@ -33,7 +33,7 @@ if (executor.args?.includes('verbose=true')) {
     output = new Output({ debug: true });
 }
 process.chdir(`${dataDir}/repo`);
-const runner = new PlyRunner(output, executor.args);
+const runner = new PlyRunner(output, executor.args, executor.variables);
 
 runner
     .runTests()
