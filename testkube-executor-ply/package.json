@@ -23,7 +23,7 @@
     "delete-test": "kubectl testkube delete test ply-demo"
   },
   "dependencies": {
-    "@ply-ct/ply": "^3.2.1",
+    "@ply-ct/ply": "^3.2.2",
     "camelcase": "^6.3.0",
     "flowbee": "^1.0.3",
     "glob": "^8.1.0",
