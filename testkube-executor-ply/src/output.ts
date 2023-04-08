@@ -23,6 +23,7 @@ export class Output implements ply.Log {
     private log(level: OutputLevel = 'info', message: string, obj?: any) {
         if (!this.options.enabled) return;
         if (level === 'debug' && !this.options.debug) return;
+        if (typeof message !== 'string') message = '' + message;
 
         if (obj !== undefined) {
             if (obj.stack) {

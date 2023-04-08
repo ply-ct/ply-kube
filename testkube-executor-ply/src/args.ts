@@ -82,7 +82,7 @@ export class PlyArgs {
                 throw new Error('Bad ply arg: ' + arg);
             }
             const name = camelCase(arg.substring(0, eq));
-            (options as any)[name] = arg.substring(eq + 1);
+            (options as any)[name] = arg.substring(eq + 1).replace(/%20/g, ' ');
         }
         // TODO other common command-line options
         if (typeof options.verbose === 'string') {
