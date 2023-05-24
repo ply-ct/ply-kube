@@ -1,8 +1,7 @@
-import { promises as fs } from 'fs';
 import { execFile as cpExecFile } from 'child_process';
 import { promisify } from 'util';
 import * as ply from '@ply-ct/ply';
-import * as flowbee from 'flowbee';
+import { FlowEvent } from '@ply-ct/ply-api';
 import * as tsNode from 'ts-node';
 import { Output } from './output';
 import { plyVersion } from './version';
@@ -17,6 +16,17 @@ export interface WorkerOptions {
 
 export class PlyWorker {
     constructor(readonly output: Output, readonly options: WorkerOptions) {}
+
+    async gitBranch() {
+        const execFile = promisify(cpExecFile);
+        const { stdout, stderr } = await execFile('git', ['branch', '--show-current']);
+        if (stderr) {
+            this.output.error(stderr);
+        }
+        if (stdout) {
+            this.output.info(`git branch: ${stdout}`);
+        }
+    }
 
     async npmInstall() {
         this.output.info('Running npm install...');
@@ -33,6 +43,9 @@ export class PlyWorker {
     async run(tests: string[]): Promise<ply.OverallResults> {
         if (this.options.delay) {
             await this.delay(this.options.delay);
+        }
+        if (this.output.options.debug) {
+            await this.gitBranch();
         }
         if (this.options.npmInstall) {
             await this.npmInstall();
@@ -65,27 +78,30 @@ export class PlyWorker {
         plier.on('outcome', (outcomeEvent: ply.OutcomeEvent) => {
             this.output.event('ply.OutcomeEvent', outcomeEvent);
         });
-        plier.on('flow', (flowEvent: flowbee.FlowEvent) => {
+        plier.on('flow', (flowEvent: FlowEvent) => {
             this.output.event('flowbee.FlowEvent', flowEvent);
         });
         plier.on('error', (err: Error) => {
             this.output.error(err.message, err);
         });
 
-        const results = await plier.run(plyees, this.options.runOptions);
+        const overallResults = await plier.run(plyees, this.options.runOptions);
+        const duration = Date.now() - start;
 
-        const outputFile =
-            this.options.plyOptions.outputFile ||
-            `${this.options.plyOptions.logLocation}/ply-runs.json`;
+        this.output.event('ply.PlyResults', { results: overallResults, duration });
+        this.output.info('\nOverall Results', overallResults);
+        this.output.info('Overall Duration', `${duration} ms`);
 
-        const plyResults = JSON.parse(
-            await fs.readFile(outputFile, { encoding: 'utf-8' })
-        ) as ply.PlyResults;
-        this.output.event('ply.PlyResults', plyResults);
+        const actualDir = this.options.plyOptions.actualLocation;
+        // const outputFile =
+        //     this.options.plyOptions.outputFile ||
+        //     `${this.options.plyOptions.logLocation}/ply-runs.json`;
 
-        this.output.info('\nOverall Results', results);
-        this.output.info('Overall Time', `${Date.now() - start} ms`);
-        return results;
+        // const plyResults = JSON.parse(
+        //     await fs.readFile(outputFile, { encoding: 'utf-8' })
+        // ) as ply.PlyResults;
+
+        return overallResults;
     }
 
     private async getPlyVersion(): Promise<string> {

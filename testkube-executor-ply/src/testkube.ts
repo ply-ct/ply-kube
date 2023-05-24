@@ -44,11 +44,6 @@ export interface Execution {
     number?: number;
 
     /**
-     * environment variables passed to executor
-     */
-    envs?: { [key: string]: string };
-
-    /**
      * additional arguments/flags passed to executor binary
      */
     args?: string[];
@@ -115,6 +110,13 @@ export interface Execution {
      * script to run before test execution
      */
     preRunScript?: string;
+
+    runningContext?: RunningContext;
+}
+
+export interface RunningContext {
+    type: 'userCLI' | 'userUI' | 'testsuite' | 'testtrigger' | 'scheduler';
+    context?: string;
 }
 
 export interface ExecutorOutput {
@@ -206,7 +208,7 @@ export interface TestContent {
     /**
      * test type
      */
-    type?: 'string' | 'file-uri' | 'git-file' | 'git-dir';
+    type?: 'string' | 'file-uri' | 'git';
 
     repository?: Repository;
 
@@ -276,6 +278,8 @@ export interface Repository {
      * if provided we checkout the whole repository and run test from this directory
      */
     workingDir?: string;
+
+    authType?: 'basic' | 'header';
 }
 
 export interface ExecutionRequest {
@@ -289,6 +293,7 @@ export interface Variable {
     value?: string;
     type?: 'basic' | 'secret';
     secretRef?: SecretRef;
+    configMapRef?: ConfigMapRef;
 }
 
 /**
@@ -302,6 +307,26 @@ export interface Variables {
  * Testkube internal reference for secret storage in Kubernetes secrets
  */
 export interface SecretRef {
+    /**
+     * object kubernetes namespace
+     */
+    namespace?: string;
+
+    /**
+     * object name
+     */
+    name: string;
+
+    /**
+     * object key
+     */
+    key: string;
+}
+
+/**
+ * Testkube internal reference for data in Kubernetes config maps
+ */
+export interface ConfigMapRef {
     /**
      * object kubernetes namespace
      */
