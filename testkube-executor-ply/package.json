@@ -1,6 +1,6 @@
 {
   "name": "@ply-ct/testkube-executor-ply",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Ply executor for testkube",
   "license": "MIT",
   "repository": {
@@ -23,8 +23,8 @@
     "delete-test": "kubectl testkube delete test ply-demo"
   },
   "dependencies": {
-    "@ply-ct/ply": "^3.2.4",
-    "@ply-ct/ply-api": "^1.0.0",
+    "@ply-ct/ply": "^3.2.5",
+    "@ply-ct/ply-api": "^1.2.2",
     "camelcase": "^6.3.0",
     "glob": "^8.1.0",
     "ts-node": "^10.9.1"
