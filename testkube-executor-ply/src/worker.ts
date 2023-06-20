@@ -29,9 +29,13 @@ export class PlyWorker {
     }
 
     async npmInstall() {
-        this.output.info('Running npm install...');
+        this.output.info('Running npm install --omit=dev --omit=optional\n...');
         const execFile = promisify(cpExecFile);
-        const { stdout, stderr } = await execFile('npm', ['install', '--omit=optional']);
+        const { stdout, stderr } = await execFile('npm', [
+            'install',
+            '--omit=dev',
+            '--omit=optional'
+        ]);
         if (stderr) {
             this.output.error(stderr);
         }
